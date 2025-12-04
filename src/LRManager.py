@@ -53,16 +53,6 @@ class LRManager:
 
         for keyEntry in self.keyList:
             print(keyEntry)
-    
-    # CREATE MODELS FOR ALL COUNTRIES
-    # def initAllModels(self):
-    #     for countryCode, countryData in self.dataByCountry.items():
-    #         countryModel = LearnedIndexLR(countryCode, countryData)
-    #         countryModel.trainModel()
-    #         countryModel.calculateErrorRanges()
-    #         self.models[countryCode] = countryModel
-
-    #     print("[FROM LRManager.py] ALL MODELS INITIALISED") # TESTING
 
     # CREATE AND TRAIN MODEL FROM OUR KEY LIST
     def initModel(self):
@@ -75,7 +65,6 @@ class LRManager:
     def getModel(self):
         return self.model
         
-
 # MAIN
 if __name__ == "__main__":
     # GET INPUT FILE FROM COMMAND LINE
@@ -88,24 +77,22 @@ if __name__ == "__main__":
     # TESTING THE MANAGER INSTANCE
     manager.processInputFile()
     manager.printKeyList()
-    # manager.initAllModels()
-    # manager.getModel("CA")
-
+    manager.initModel()
 
     # TESTING THE MODEL INSTANCE
-    # canadaData = manager.getCountryData("CA")
-    # printString = ""
-    # for record in canadaData:
-    #     printString += str(record)
-    #     printString += ", "
-    # print(printString)
+    model = manager.getModel()
+    model.printSlopeIntercept()
+    model.predict(2024)
+    model.printErrorRanges()
 
-    testIndexes = [2024, 2022, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003, 2002, 2001, 2000]
 
-    canadaModel = LearnedIndexLR(testIndexes)
-    canadaModel.trainModel()
-    canadaModel.printSlopeIntercept()
-    canadaModel.calculateErrorRanges()
-    canadaModel.printErrorRanges()
+
+    # testIndexes = [2024, 2022, 2022, 2021, 2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003, 2002, 2001, 2000]
+
+    # canadaModel = LearnedIndexLR(testIndexes)
+    # canadaModel.trainModel()
+    # canadaModel.printSlopeIntercept()
+    # canadaModel.calculateErrorRanges()
+    # canadaModel.printErrorRanges()
 
  
