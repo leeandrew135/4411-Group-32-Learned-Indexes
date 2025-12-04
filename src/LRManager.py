@@ -88,8 +88,16 @@ if __name__ == "__main__":
     # TESTING THE MODEL INSTANCE
     model = manager.getModel()
     model.printSlopeIntercept()
-    model.predict(2024)
     model.printErrorRanges()
+
+    printPrediction = model.predict(793)          # 793 - 497th ROW - INDEX [496]
+    printIndexPos = model.getIndexPosition(793)
+    print(printPrediction)
+    print(printIndexPos)
+
+    printIndexPos = model.getIndexPosition(794)
+    print(printIndexPos)
+
 
 
 

@@ -52,11 +52,6 @@ class LearnedIndexLR:
         print("\tself.m:\t" + str(self.m))
         print("\tself.b:\t" + str(self.b))
 
-    # USE [year] TO PREDICT POSITION BY [mx + b]
-    def predict(self, year: int):
-        returnValue = self.m * year + self.b
-        return returnValue
-    
     # GETS THE MAX POSSIBLE ERROR RANGES
     def calculateErrorRanges(self):
         for position in self.indexPositions:
@@ -81,6 +76,11 @@ class LearnedIndexLR:
         print("MAX POSITIVE ERROR: " + str(self.maxPositiveError))
         print("MAX NEGATIVE ERROR: " + str(self.maxNegativeError))
 
+    # USE [year] TO PREDICT POSITION BY [mx + b]
+    def predict(self, year: int):
+        returnValue = self.m * year + self.b
+        return returnValue
+    
     # CALCULATES THE EXACT RANGES, THEN PERFORMS BINARY SEARCH
     def getIndexPosition(self, key):
         # GET THE PREDICTION
