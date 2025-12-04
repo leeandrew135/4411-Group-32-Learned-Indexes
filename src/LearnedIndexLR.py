@@ -87,8 +87,9 @@ class LearnedIndexLR:
         prediction = self.predict(key)
 
         # COMPUTE POSSIBLE RANGE
-        left = prediction + self.maxNegativeError
-        right = prediction + self.maxPositiveError
+        # ADDED MIN/MAX TO ENSURE CORRECT BOUNDS
+        left = max(0, prediction + self.maxNegativeError)
+        right = min(prediction + self.maxPositiveError, len(self.indexPositions))
 
         # ROUND MAX UPWARDS, ROUND MIN DOWNWARDS
         left = math.floor(left)
@@ -106,3 +107,19 @@ class LearnedIndexLR:
 
         # IF THIS IS REACHED, THEN INDEX WAS NOT FOUND
         return None
+
+    # ADDS THE GIVEN KEY TO THE INDEX LIST
+    def addIndex(self, key):
+        # GET THE PREDICTION 
+        prediction = self.predict(key)
+
+        # COMPUTE POSSIBLE RANGE
+        left = prediction + self.maxNegativeError
+        right = prediction + self.maxPositiveError
+
+        # ROUND MAX UPWARDS, ROUND MIN DOWNWARDS
+        left = math.floor(left)
+        right = math.ceil(right)
+
+        # DO BINARY SEARCH, WHILE CHECKING EACH TIME WE MOVE LEFT/RIGHT
+        # IF GIVEN KEY IS FOUND, DO NOTHING
