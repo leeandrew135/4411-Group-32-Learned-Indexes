@@ -48,11 +48,17 @@ class LRManager:
             self.keyList.sort()
                 
     # OUTPUT dataByCountry TO COMMAND LINE
+    # FORMATTED FOR COPY PASTE TO GRAPHING CALCULATOR
     def printKeyList(self):
         print("printKeyList():")
+        printString = ""
 
+        yValue = 1
         for keyEntry in self.keyList:
-            print(keyEntry)
+            # print("(" + str(xValue) + "," + str(keyEntry) + "),")
+            printString += "(" + str(keyEntry) + "," + str(yValue) + "),"
+            yValue += 1
+        print(printString)
 
     # CREATE AND TRAIN MODEL FROM OUR KEY LIST
     def initModel(self):
