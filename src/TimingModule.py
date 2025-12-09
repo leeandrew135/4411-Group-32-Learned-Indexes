@@ -55,12 +55,19 @@ def timeLR(filepath, indexColumn):
     # print("TIME TO LOOKUP KEY VALUE 1188: " + str(resultingTime) + " SECONDS.")
     print("TIME TO INSERT KEY VALUE 1188: " + str(resultingTime3 * 1000) + " ms.")
     
+    # PERFORM A RANGE QUERY TO COMPARE WITH HASH INDEX
+    timeStart = time.time()
+    model.getRange(500, 1000) # ONLY FOR ROUGHLY LINEAR
+    timeEnd = time.time()
+    resultingTime4 = timeEnd - timeStart
+    print("TIME TO GET RANGE 500 - 1000: " + str(resultingTime4 * 1000) + " ms.")
+
     print("\n")
 
     modelSize = asizeof.asizeof(model)
     print("LR SPACE COMPLEXITY: MODEL USES:", modelSize, "bytes.")
 
-    return [resultingTime1, resultingTime2, resultingTime3]
+    return [resultingTime1, resultingTime2, resultingTime3, resultingTime4]
 
 def timeHI(filepath, indexColumn):
     manager = LRManager(filepath, indexColumn)
@@ -105,12 +112,19 @@ def timeHI(filepath, indexColumn):
     resultingTime3 = timeEnd - timeStart
     print("TIME TO INSERT KEY VALUE 1188: " + str(resultingTime3 * 1000) + " ms.")
 
+    # PERFORM A RANGE QUERY TO COMPARE WITH HASH INDEX
+    timeStart = time.time()
+    hash_idx.getRange(500, 1000) # ONLY FOR ROUGHLY LINEAR
+    timeEnd = time.time()
+    resultingTime4 = timeEnd - timeStart
+    print("TIME TO GET RANGE 500 - 1000: " + str(resultingTime4 * 1000) + " ms.")
+
     print("\n")
     
     modelSize = asizeof.asizeof(hash_idx)
     print("HI SPACE COMPLEXITY: MODEL USES:", modelSize, "bytes.")
 
-    return [resultingTime1, resultingTime2, resultingTime3]
+    return [resultingTime1, resultingTime2, resultingTime3, resultingTime4]
 
 def main():
     # GET PARAMS FROM COMMAND LINE
@@ -127,48 +141,55 @@ def main():
         totalLookup = 0
         totalRemove = 0
         totalInsert = 0
+        totalRange = 0
 
         while counter < iterations:
             result = timeLR(filepath, indexColumn)
             totalLookup += result[0]
             totalRemove += result[1]
             totalInsert += result[2]
+            totalRange += result[3]
             counter += 1
 
         avgLookup = totalLookup / iterations
         avgRemove = totalRemove / iterations
         avgInsert = totalInsert / iterations
+        avgRange = totalRange / iterations
 
         print("AVG. LR LOOKUP OVER " + str(iterations) + ": " + str(avgLookup * 1000) + " ms.")
         print("AVG. LR REMOVE OVER " + str(iterations) + ": " + str(avgRemove * 1000) + " ms.")
         print("AVG. LR INSERT OVER " + str(iterations) + ": " + str(avgInsert * 1000) + " ms.")
+        print("AVG. LR  RANGE OVER " + str(iterations) + ": " + str( avgRange * 1000) + " ms.")
         print("\n")
-
     # B+ TREE
     elif indexMethod == "BT":
         pass
     # HASH INDEX
     elif indexMethod == "HI":
         counter = 0
-        iterations = 3
+        iterations = 500
         totalLookup = 0
         totalRemove = 0
         totalInsert = 0
+        totalRange = 0
 
         while counter < iterations:
             result = timeHI(filepath, indexColumn)
             totalLookup += result[0]
             totalRemove += result[1]
             totalInsert += result[2]
+            totalRange += result[3]
             counter += 1
 
         avgLookup = totalLookup / iterations
         avgRemove = totalRemove / iterations
         avgInsert = totalInsert / iterations
+        avgRange = totalRange / iterations
 
         print("AVG. HI LOOKUP OVER " + str(iterations) + ": " + str(avgLookup * 1000) + " ms.")
         print("AVG. HI REMOVE OVER " + str(iterations) + ": " + str(avgRemove * 1000) + " ms.")
         print("AVG. HI INSERT OVER " + str(iterations) + ": " + str(avgInsert * 1000) + " ms.")
+        print("AVG. HI RANGE OVER " + str(iterations) + ": " + str(avgRange * 1000) + " ms.")
         print("\n")
     # NEURAL NETWORK
     elif indexMethod == "NN":
