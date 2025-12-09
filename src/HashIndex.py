@@ -32,3 +32,15 @@ class HashIndex:
     def removeIndex(self, key):
         if key in self.hashTable:
             del self.hashTable[key]
+
+    # RETURN ALL INDEXES BETWEEN THE 2 KEYS
+    def getRange(self, key1, key2):
+        # STORES ALL POSITIONS BETWEEN THE RANGE
+        returnPositions = []
+
+        # ITERATE ALL KEYS
+        for key, positions in self.hashTable.items():
+            if key1 <= key <= key2:
+                returnPositions.extend(positions)
+
+        return returnPositions

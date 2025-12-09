@@ -156,7 +156,7 @@ class LearnedIndexLR:
 
     # REMOVES THE GIVEN KEY FROM THE INDEX (IF POSSIBLE)
     def removeIndex(self, key):
-                # GET THE PREDICTION 
+        # GET THE PREDICTION 
         prediction = self.predict(key)
 
         # COMPUTE POSSIBLE RANGE
@@ -199,3 +199,56 @@ class LearnedIndexLR:
         
         # READJUST MODEL PARAMETERS
         self.trainModel()
+
+    # RETURNS ALL INDEXES (SLICE) BETWEEN 2 GIVEN KEYS
+    def getRange(self, key1, key2):
+        # GET THE PREDICTIONS
+        prediction1 = self.predict(key1)
+        prediction2 = self.predict(key2)
+
+        # GET THE POSSIBLE RANGES
+        left1 = prediction1 + self.maxNegativeError
+        right1 = prediction1 + self.maxPositiveError
+        left2 = prediction2 + self.maxNegativeError
+        right2 = prediction2 + self.maxPositiveError
+
+        # ROUND MAX UPWARDS, ROUND MIN DOWNWARDS
+        left1 = math.floor(left1)
+        right1 = math.ceil(right1)
+        left2 = math.floor(left2)
+        right2 = math.ceil(right2)
+
+        # SET BOUNDS
+        if left1 < 0:
+            left1 = 0
+        if right1 > self.indexPositions[len(self.indexPositions) - 1]:
+            right1 = self.indexPositions[len(self.indexPositions) - 1]
+        if left2 < 0:
+            left2 = 0
+        if right2 > self.indexPositions[len(self.indexPositions) - 1]:
+            right2 = self.indexPositions[len(self.indexPositions) - 1]        
+
+        # FIND INDEX FOR key1
+        start = left1
+        end = right1
+        while start < end:
+            middle = (start + end) // 2
+            if self.indexList[middle] < key1:
+                start = middle + 1
+            else:
+                end = middle
+        index1 = start
+
+        # FIND INDEX FOR key2
+        start = left2
+        end = right2
+        while start < end:
+            middle = (start + end) // 2
+            if self.indexList[middle] < key2:
+                start = middle + 1
+            else:
+                end = middle
+        index2 = start
+
+        print("INDEX 1:", index1, "\nINDEX 2:", index2)
+        return self.indexPositions[index1:index2 + 1]
