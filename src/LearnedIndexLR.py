@@ -124,6 +124,11 @@ class LearnedIndexLR:
         left = math.floor(left)
         right = math.ceil(right)
 
+        if left < 0:
+            left = 0
+        if right > self.indexPositions[len(self.indexPositions) - 1]:
+            right = self.indexPositions[len(self.indexPositions) - 1]
+
         # DO BINARY SEARCH, WHILE CHECKING EACH TIME WE MOVE LEFT/RIGHT
         # THIS SAME MODIFIED BINARY SEARCH WILL BE USED IN REMOVE
         keyFound = False
@@ -162,11 +167,19 @@ class LearnedIndexLR:
         left = math.floor(left)
         right = math.ceil(right)
 
+        if left < 0:
+            left = 0
+        if right > self.indexPositions[len(self.indexPositions) - 1]:
+            right = self.indexPositions[len(self.indexPositions) - 1]
+
         # USE MODIFIED BINARY SEARCH TO DELETE THE GIVEN INDEX
         # IF GIVEN KEY IS FOUND, THEN DELETE, IF NOT FOUND, THEN DO NOTHING
         keyFound = None
         while left <= right:
             middle = (left + right) // 2
+            # print(left)
+            # print(right)
+            # print(middle)
             if self.indexList[middle] == key:
                 keyFound = True
                 break
