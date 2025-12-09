@@ -4,6 +4,7 @@ import sys
 import time 
 from LRManager import LRManager
 from HashIndex import HashIndex
+from pympler import asizeof
 
 def timeLR(filepath, indexColumn): 
     # CREATE MANAGER (NO NEED TO BE TIMED)
@@ -36,7 +37,7 @@ def timeLR(filepath, indexColumn):
     timeEnd = time.time()
     resultingTime1 = timeEnd - timeStart
     # print("TIME TO LOOKUP KEY VALUE 1188: " + str(resultingTime) + " SECONDS.")
-    print("TIME TO LOOKUP KEY VALUE 1188: " + str(resultingTime * 1000) + " ms.")
+    print("TIME TO LOOKUP KEY VALUE 1188: " + str(resultingTime1 * 1000) + " ms.")
 
     # REMOVE A KNOWN KEY VALUE (1188), THEN READJUST MODEL
     timeStart = time.time()
@@ -44,7 +45,7 @@ def timeLR(filepath, indexColumn):
     timeEnd = time.time()
     resultingTime2 = timeEnd - timeStart
     # print("TIME TO LOOKUP KEY VALUE 1188: " + str(resultingTime) + " SECONDS.")
-    print("TIME TO REMOVE KEY VALUE 1188: " + str(resultingTime * 1000) + " ms.")
+    print("TIME TO REMOVE KEY VALUE 1188: " + str(resultingTime2 * 1000) + " ms.")
 
     # ADD BACK A KEY VALUE KNOWN TO NOT EXIST (1188), THEN READJUST MODEL
     timeStart = time.time()
@@ -52,12 +53,64 @@ def timeLR(filepath, indexColumn):
     timeEnd = time.time()
     resultingTime3 = timeEnd - timeStart
     # print("TIME TO LOOKUP KEY VALUE 1188: " + str(resultingTime) + " SECONDS.")
-    print("TIME TO INSERT KEY VALUE 1188: " + str(resultingTime * 1000) + " ms.")
+    print("TIME TO INSERT KEY VALUE 1188: " + str(resultingTime3 * 1000) + " ms.")
     
     print("\n")
 
+    modelSize = asizeof.asizeof(model)
+    print("LR SPACE COMPLEXITY: MODEL USES:", modelSize, "bytes.")
+
     return [resultingTime1, resultingTime2, resultingTime3]
 
+def timeHI(filepath, indexColumn):
+    manager = LRManager(filepath, indexColumn)
+    
+    # READS AND SORTS DATA (TIMED)
+    timeStart = time.time()
+    manager.processInputFile()
+    timeEnd = time.time()
+    print("PROCESS INPUT TIME: " + str((timeEnd - timeStart) * 1000) + " ms.")
+
+    # CREATE AND POPULATE THE HASH INDEX
+    timeStart = time.time()
+    hash_idx = HashIndex()
+    hash_idx.buildIndex(manager.keyList)
+    timeEnd = time.time()
+    print("BUILD INDEX TIME: " + str((timeEnd - timeStart) * 1000) + " ms.")
+
+    # LOOKUP A KNOWN KEY VALUE (1188)
+    timeStart = time.time()
+    positions = hash_idx.getIndexPosition(1188) 
+    timeEnd = time.time()
+    resultingTime1 = timeEnd - timeStart
+    print("TIME TO LOOKUP KEY 1188: " + str(resultingTime1 * 1000) + " ms.")
+    
+    # VERIFY SEARCH RESULTS
+    if positions:
+        print(f"   > Found matches at indices: {positions[:5]}...")
+    else:
+        print("   > Key not found.")
+    
+    # REMOVE THE KEY (1188) FROM THE INDEX
+    timeStart = time.time()
+    hash_idx.removeIndex(1188)
+    timeEnd = time.time()
+    resultingTime2 = timeEnd - timeStart
+    print("TIME TO REMOVE KEY 1188: " + str(resultingTime2 * 1000) + " ms.")
+
+    # ADD BACK A KEY VALUE KNOWN TO NOT EXIST (1188)
+    timeStart = time.time()
+    hash_idx.addIndex(1188, positions[0])
+    timeEnd = time.time()
+    resultingTime3 = timeEnd - timeStart
+    print("TIME TO INSERT KEY VALUE 1188: " + str(resultingTime3 * 1000) + " ms.")
+
+    print("\n")
+    
+    modelSize = asizeof.asizeof(hash_idx)
+    print("HI SPACE COMPLEXITY: MODEL USES:", modelSize, "bytes.")
+
+    return [resultingTime1, resultingTime2, resultingTime3]
 
 def main():
     # GET PARAMS FROM COMMAND LINE
@@ -70,7 +123,7 @@ def main():
     # LINEAR REGRESSION
     if indexMethod == "LR":
         counter = 0
-        iterations = 500
+        iterations = 3
         totalLookup = 0
         totalRemove = 0
         totalInsert = 0
@@ -83,7 +136,7 @@ def main():
             counter += 1
 
         avgLookup = totalLookup / iterations
-        avgRemove= totalRemove / iterations
+        avgRemove = totalRemove / iterations
         avgInsert = totalInsert / iterations
 
         print("AVG. LR LOOKUP OVER " + str(iterations) + ": " + str(avgLookup * 1000) + " ms.")
@@ -96,46 +149,26 @@ def main():
         pass
     # HASH INDEX
     elif indexMethod == "HI":
-        manager = LRManager(filepath, indexColumn)
-        
-        # READS AND SORTS DATA (TIMED)
-        timeStart = time.time()
-        manager.processInputFile()
-        timeEnd = time.time()
-        print("PROCESS INPUT TIME: " + str((timeEnd - timeStart) * 1000) + " ms.")
+        counter = 0
+        iterations = 3
+        totalLookup = 0
+        totalRemove = 0
+        totalInsert = 0
 
-        # CREATE AND POPULATE THE HASH INDEX
-        timeStart = time.time()
-        hash_idx = HashIndex()
-        hash_idx.buildIndex(manager.keyList)
-        timeEnd = time.time()
-        print("BUILD INDEX TIME: " + str((timeEnd - timeStart) * 1000) + " ms.")
+        while counter < iterations:
+            result = timeHI(filepath, indexColumn)
+            totalLookup += result[0]
+            totalRemove += result[1]
+            totalInsert += result[2]
+            counter += 1
 
-        # LOOKUP A KNOWN KEY VALUE (1188)
-        timeStart = time.time()
-        positions = hash_idx.getIndexPosition(1188) 
-        timeEnd = time.time()
-        print("TIME TO LOOKUP KEY 1188: " + str((timeEnd - timeStart) * 1000) + " ms.")
-        
-        # VERIFY SEARCH RESULTS
-        if positions:
-            print(f"   > Found matches at indices: {positions[:5]}...")
-        else:
-            print("   > Key not found.")
-        
-        # REMOVE THE KEY (1188) FROM THE INDEX
-        timeStart = time.time()
-        hash_idx.removeIndex(1188)
-        timeEnd = time.time()
-        print("TIME TO REMOVE KEY 1188: " + str((timeEnd - timeStart) * 1000) + " ms.")
+        avgLookup = totalLookup / iterations
+        avgRemove = totalRemove / iterations
+        avgInsert = totalInsert / iterations
 
-        # ADD BACK A KEY VALUE KNOWN TO NOT EXIST (1188)
-        timeStart = time.time()
-        hash_idx.addIndex(1188)
-        timeEnd = time.time()
-        resultingTime = timeEnd - timeStart
-        print("TIME TO INSERT KEY VALUE 1188: " + str(resultingTime * 1000) + " ms.")
-
+        print("AVG. HI LOOKUP OVER " + str(iterations) + ": " + str(avgLookup * 1000) + " ms.")
+        print("AVG. HI REMOVE OVER " + str(iterations) + ": " + str(avgRemove * 1000) + " ms.")
+        print("AVG. HI INSERT OVER " + str(iterations) + ": " + str(avgInsert * 1000) + " ms.")
         print("\n")
     # NEURAL NETWORK
     elif indexMethod == "NN":
