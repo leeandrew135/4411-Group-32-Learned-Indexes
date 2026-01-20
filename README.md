@@ -1,5 +1,8 @@
 # 4411-Group-32-Learned-Indexes
 
+## Results and Conclusions available in the following presentation:
+https://docs.google.com/presentation/d/1xJaBmG9CH8xRuMbPtclfikTH5x70gH4ecZv83ZhBwF0/edit?usp=sharing 
+
 ## About this README
 This README is written for use on the github repo. If this is being read from the README.md file, refer to the following link for ease of viewing:
 [GitHub Repo](https://github.com/leeandrew135/4411-Group-32-Learned-Indexes)
